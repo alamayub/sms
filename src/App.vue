@@ -1,32 +1,41 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-overlay :value="overlay">
+      <v-progress-circular indeterminate size="64" />
+    </v-overlay>
+    <Navbar />
+    <Sidebar />
+    <v-main>
+      <router-view/>
+    </v-main>
+  </v-app>
 </template>
 
+<script>
+import Navbar from './components/Navbar.vue'
+import Sidebar from './components/Sidebar.vue'
+export default {
+  name: 'App',
+  components: { Navbar, Sidebar },
+  computed: {
+    overlay() {
+      return this.$store.state.overlay
+    }
+  }
+};
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+::-webkit-scrollbar { width: 0; }
+.v-btn span {
+  font-weight: 400 !important;
+  font-size: 13px !important;
+  text-transform: capitalize !important;
 }
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>
