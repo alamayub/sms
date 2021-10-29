@@ -63,8 +63,8 @@
                 <v-text-field v-model="form.mobile" label="Phone Number*" :rules="[ v => !!v || 'Mobile Number is required' ]" dense hide-details outlined type="number" />
               </div>
               <label class="employee__img grey lighten-3" for="file">
-                <div v-if="form.image !== null" style="height: 100%; width: 100%;">
-                  <img :src="form.image">
+                <div v-if="img !== null" style="height: 100%; width: 100%;">
+                  <img :src="img">
                 </div>
                 <div v-else class="d-flex justify-center align-center" style="height: 100%; width: 100%;">
                   <v-icon size="90">mdi-camera</v-icon>
@@ -78,7 +78,7 @@
         <v-card-actions class="px-6 py-4 grey lighten-3">
           <v-spacer />
           <v-btn color="red" dark @click="reset">reset</v-btn>
-          <v-btn color="success" @click="isSave ? save : edit(form['.key'])">{{ isSave ? 'save' : 'edit' }}</v-btn>
+          <v-btn color="success" @click="isSave ? save : edit()">{{ isSave ? 'save' : 'edit' }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -92,12 +92,14 @@ export default {
     dialog: false,
     valid: true,
     file: null,
+    img: null,
     form: {
       name: null,
       mobile: null,
       address: null,
       image: null
     },
+    editId: null,
     isSave: true,
     users: []
   }),
@@ -107,12 +109,13 @@ export default {
   methods: {
     fileUpload(e) { 
       this.file = e.target.files[0]
-      this.form.image = URL.createObjectURL(this.file) 
+      this.img = URL.createObjectURL(this.file) 
     },
     reset() { 
       this.$refs.form.reset()
       this.file = null
       this.img = null
+      this.editId = null
       this.isSave = true
     },
     save() {
@@ -130,13 +133,19 @@ export default {
       }
     },
     openEditModel(data) {
-      this.form = data
+      this.form.name = data.name
+      this.form.mobile = data.mobile
+      this.form.address = data.address
+      this.img = data.image
+      this.editId = data['.key']
       this.dialog = true
       this.isSave = false
     },
-    edit(id) {
+    edit() {
+      console.log('called')
       if(this.$refs.form.validate()) {
         this.dialog = false
+        this.isSave ? this.form['image'] = this.img : null
         this.$store.dispatch({ 
           type: 'alertDialog', 
           text: 'Edit', 
@@ -144,7 +153,7 @@ export default {
           file: this.file,
           collection: 'employee', 
           data: this.form, 
-          id: id 
+          id: this.editId
         }).then( () => { this.reset() }).catch( () => this.dialog = true)
       }
     },

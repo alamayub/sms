@@ -40,9 +40,8 @@ export default new Vuex.Store({
               file ?
               await dispatch({ type: 'uploadImage', folder: folder, file: file }).then( url => {
                 data['image'] = url
-                dispatch({ type: 'edit', collection: collection, data: data })
-              }) :
-              await dispatch({ type: 'edit', collection: collection, id: id, data: data })
+                dispatch({ type: 'edit', collection: collection, id: id, data: data })
+              }) : await dispatch({ type: 'edit', collection: collection, id: id, data: data })
             }
             else if(actionType === 3) await dispatch({ type: 'deleteItem', collection: collection, id: id })
             Swal.fire(`${text}ed!`, `Your file has been ${text}ed.`, 'success')
@@ -109,8 +108,6 @@ export default new Vuex.Store({
     // edit item
     edit({ commit }, { collection, id, data }) {
       commit('SET_OVERLAY', true)
-      delete data['.key']
-      console.log(data)
       return new Promise((resolve, reject) => {  
         data['updatedAt'] = new Date().getTime()
         db.collection(collection).doc(id).update(data).then( () => {
