@@ -23,9 +23,28 @@ Vue.mixin({
   })
 })
 
-new Vue({
-  router,
-  store,
-  vuetify,
-  render: h => h(App)
-}).$mount('#app')
+import { fb } from '@/firebase'
+router.beforeEach(async (to, from, next) => {
+  let token = await fb.auth().currentUser
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!token) next('/login')
+    else next()
+  } else if (to.matched.some(record => record.meta.requiresVisitor)) {
+    if (token) next('/')
+    else next()
+  } else next()
+})
+
+
+let app = '';
+
+fb.auth().onAuthStateChanged(() => {
+  if (!app) {
+    app = new Vue({
+      router,
+      store,
+      vuetify,
+      render: h => h(App)
+    }).$mount('#app')
+  }
+});

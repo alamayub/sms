@@ -3,8 +3,7 @@
     <v-overlay :value="overlay">
       <v-progress-circular indeterminate size="64" />
     </v-overlay>
-    <Navbar />
-    <Sidebar />
+    
     <v-main>
       <router-view/>
     </v-main>
@@ -12,11 +11,8 @@
 </template>
 
 <script>
-import Navbar from './components/Navbar.vue'
-import Sidebar from './components/Sidebar.vue'
 export default {
   name: 'App',
-  components: { Navbar, Sidebar },
   computed: {
     overlay() {
       return this.$store.state.overlay
@@ -38,4 +34,22 @@ img {
   width: 100%;
   object-fit: cover;
 }
+
+/* Input Fields */
+.v-text-field input, .v-input .v-label {
+  font-size: 13px !important;
+  color: rgb(0 0 0 / 80%) !important;
+  font-weight: 400 !important;
+  letter-spacing: 1px !important;
+}
+.v-input input { font-size: 13px !important; }
+.v-input .v-label { 
+  line-height: 1 !important;
+  font-size: small !important;
+}
+.v-text-field--outlined.v-input--is-focused fieldset { border: 1px solid #502989 !important; }
+.v-text-field--outlined.v-input--has-state fieldset { border: 1px solid #ff2059 !important; }
+.v-input .v-icon.v-icon { font-size: 18px !important; }
+.v-text-field--outlined.v-input--dense .v-label { top: 14px !important; }
+.v-input__prepend-outer { display: none !important; }
 </style>

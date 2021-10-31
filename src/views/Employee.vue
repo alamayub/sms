@@ -51,7 +51,7 @@
       <v-card>
         <v-card-title class="grey lighten-3 d-flex justify-space-between">
           <div class="title">{{ isSave ? 'New' : 'Edit' }} Employee</div>
-          <v-btn color="red" icon @click="dialog = false">
+          <v-btn color="red" icon @click="closeDialog">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -63,8 +63,8 @@
                 <v-text-field v-model="form.mobile" label="Phone Number*" :rules="[ v => !!v || 'Mobile Number is required' ]" dense hide-details outlined type="number" />
               </div>
               <label class="employee__img grey lighten-3" for="file">
-                <div v-if="img !== null" style="height: 100%; width: 100%;">
-                  <img :src="img">
+                <div v-if="form.image !== null" style="height: 100%; width: 100%;">
+                  <img :src="form.image">
                 </div>
                 <div v-else class="d-flex justify-center align-center" style="height: 100%; width: 100%;">
                   <v-icon size="90">mdi-camera</v-icon>
@@ -72,6 +72,7 @@
                 <input type="file" id="file" accept="image/*" class="d-none" @change="fileUpload">
               </label>
             </div>
+            <v-text-field label="Rate Per Day(Rs.)" v-model="form.rate" :rules="[ v => !!v || '']" dense outlined hide-details />
             <v-text-field v-model="form.address" label="Address*" :rules="[ v => !!v || 'Address is required' ]" dense hide-details outlined />
           </v-form>
         </v-card-text>
@@ -92,12 +93,12 @@ export default {
     dialog: false,
     valid: true,
     file: null,
-    img: null,
     form: {
       name: null,
       mobile: null,
       address: null,
-      image: null
+      image: null,
+      rate: null
     },
     editId: null,
     isSave: true,
@@ -107,6 +108,12 @@ export default {
     users: db.collection('employee').where('status', '==', true).orderBy('createdAt', 'desc')
   }),
   methods: {
+    closeDialog() {
+      this.file = null
+      this.reset()
+      this.editId = null
+      this.isSave = true
+    },
     fileUpload(e) { 
       this.file = e.target.files[0]
       this.img = URL.createObjectURL(this.file) 
@@ -114,16 +121,13 @@ export default {
     reset() { 
       this.$refs.form.reset()
       this.file = null
-      this.img = null
       this.editId = null
-      this.isSave = true
     },
     save() {
       if(this.$refs.form.validate()) {
         this.dialog = false
         this.$store.dispatch({
           type: 'alertDialog',
-          text: 'Save',
           actionType: 1,
           folder: 'employee',
           collection: 'employee',
@@ -136,16 +140,15 @@ export default {
       this.form.name = data.name
       this.form.mobile = data.mobile
       this.form.address = data.address
-      this.img = data.image
+      this.form.image = data.image
+      this.form.rate = data.rate
       this.editId = data['.key']
       this.dialog = true
       this.isSave = false
     },
     edit() {
-      console.log('called')
       if(this.$refs.form.validate()) {
         this.dialog = false
-        this.isSave ? this.form['image'] = this.img : null
         this.$store.dispatch({ 
           type: 'alertDialog', 
           text: 'Edit', 

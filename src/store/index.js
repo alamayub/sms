@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { fb, db } from '../firebase'
 import Swal from 'sweetalert2'
+import router from '../router/index'
 
 Vue.use(Vuex)
 
@@ -15,10 +16,35 @@ export default new Vuex.Store({
     SET_OVERLAY: (state, val) => state.overlay = val
   },
   actions: {
+    // login
+    login({ commit },  { email, password }) {
+      commit('SET_OVERLAY', true)
+      return new Promise((resolve, reject) => {
+        fb.auth().signInWithEmailAndPassword(email, password).then( user => {
+          router.replace('/')
+          resolve(user.user)
+        }).catch( e => {
+          Swal.fire('Error!', e.message, 'error')
+          reject(e)
+        })
+      }).finally( () => commit('SET_OVERLAY', false))
+    },
+    // logout 
+    logout({commit}) {
+      commit('SET_OVERLAY', true)
+      return new Promise((resolve, reject) => {
+        fb.auth().signOut().then( () => {
+          router.replace('/login')
+          resolve()
+        }).catch( e => {
+          Swal.fire('Error!', e.message, 'error')
+          reject(e)
+        })
+      }).finally( () => commit('SET_OVERLAY', false))
+    },
     // alert
     // eslint-disable-next-line no-empty-pattern
-    alertDialog({ dispatch },{ text, actionType, collection, folder, file, data, id }) {
-      console.log(text)
+    alertDialog({ dispatch },{ text, actionType, collection, file, data, id }) {
       return new Promise((resolve, reject) => {
         Swal.fire({
           title: 'Are you sure?',
@@ -32,19 +58,17 @@ export default new Vuex.Store({
           if (result.isConfirmed) {
             // type 1 id save, type 2 is update, type 3 is delete
             if(actionType === 1) {
-              await dispatch({ type: 'uploadImage', folder: folder, file: file }).then( url => {
+              file ? await dispatch({ type: 'uploadImage', folder: collection, file: file }).then( url => {
                 data['image'] = url
                 dispatch({ type: 'save', collection: collection, data: data })
-              })
+              }) : dispatch({ type: 'save', collection: collection, data: data })
             } else if (actionType === 2) {
-              file ?
-              await dispatch({ type: 'uploadImage', folder: folder, file: file }).then( url => {
+              file ? await dispatch({ type: 'uploadImage', folder: collection, file: file }).then( url => {
                 data['image'] = url
                 dispatch({ type: 'edit', collection: collection, id: id, data: data })
               }) : await dispatch({ type: 'edit', collection: collection, id: id, data: data })
             }
             else if(actionType === 3) await dispatch({ type: 'deleteItem', collection: collection, id: id })
-            Swal.fire(`${text}ed!`, `Your file has been ${text}ed.`, 'success')
             resolve()
           } else reject()
         })
@@ -59,10 +83,11 @@ export default new Vuex.Store({
         data['status'] = true
         db.collection(collection).add(data).then( () => {
           commit('SET_OVERLAY', false)
+          Swal.fire('Saved!', 'Your file has been saved successfully.', 'success')
           resolve()
         }).catch( e => {
-          console.log(e)
           commit('SET_OVERLAY', false)
+          Swal.fire('Error!', e.message, 'error')
           reject(e)
         })
       })
@@ -77,8 +102,8 @@ export default new Vuex.Store({
           let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(progress)
         }, e => {
-          console.log(e)
           commit('SET_OVERLAY', false)
+          Swal.fire('Error!', e.message, 'error')
           reject(false)
         }, () => {
           uploadTask.snapshot.ref.getDownloadURL().then( url => {
@@ -97,9 +122,10 @@ export default new Vuex.Store({
           updatedAt: new Date().getTime()
         }).then( () => {
           commit('SET_OVERLAY', false)
+          Swal.fire('Deleted!', 'Your file has been deleted successfully.', 'success')
           resolve()
         }).catch( e => {
-          console.log(e)
+          Swal.fire('Error!', e.message, 'error')
           commit('SET_OVERLAY', false)
           reject(e)
         })
@@ -112,9 +138,10 @@ export default new Vuex.Store({
         data['updatedAt'] = new Date().getTime()
         db.collection(collection).doc(id).update(data).then( () => {
           commit('SET_OVERLAY', false)
+          Swal.fire('Updated!', 'Your file has been updated successfully.', 'success')
           resolve()
         }).catch( e => {
-          console.log(e)
+          Swal.fire('Error!', e.message, 'error')
           commit('SET_OVERLAY', false)
           reject(e)
         })

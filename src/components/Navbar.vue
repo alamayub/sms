@@ -1,6 +1,6 @@
 <template>
-  <v-app-bar app color="white">
-    <v-app-bar-nav-icon class="d-block d-sm-none" @click="setDrawer(!drawer)" />
+  <v-app-bar app color="primary" elevate-on-scroll dark height="60">
+    <v-app-bar-nav-icon @click="setDrawer(!drawer)" />
     <v-spacer />
     <v-btn icon>
       <v-icon v-text="'mdi-account'" />
@@ -18,10 +18,6 @@ export default {
     ...mapMutations({
       setDrawer: 'SET_DRAWER',
     })
-  },
-  created() {
-    window.addEventListener('resize', () => { if(window.innerWidth > 600) this.setDrawer(true) })
-    if(window.innerWidth > 600) this.setDrawer(true)
   }
 }
 </script>
