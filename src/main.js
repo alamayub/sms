@@ -14,14 +14,21 @@ Vue.config.productionTip = false
 Vue.mixin({
   data: () => ({
     menus: [
-      { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/' },
+      { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard' },
       { title: 'Attendance', icon: 'mdi-poll', to: '/attendance' },
-      { title: 'Sites', icon: 'mdi-map-marker', to: '/sites' },
+      { title: 'Projects', icon: 'mdi-clipboard-list-outline', to: '/projects' },
       { title: 'Employee', icon: 'mdi-account-group', to: '/employee' },
       { title: 'Report', icon: 'mdi-post', to: '/report' }
     ]
   })
 })
+
+import FAB from './components/FAB'
+Vue.component('FAB', FAB)
+import CardTitle from './components/CardTitle'
+Vue.component('CardTitle', CardTitle)
+import CardAction from './components/CardAction'
+Vue.component('CardAction', CardAction)
 
 import { fb } from '@/firebase'
 router.beforeEach(async (to, from, next) => {

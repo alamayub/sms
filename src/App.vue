@@ -36,7 +36,7 @@ img {
 }
 
 /* Input Fields */
-.v-text-field input, .v-input .v-label {
+.v-text-field input, .v-input .v-label , textarea{
   font-size: 13px !important;
   color: rgb(0 0 0 / 80%) !important;
   font-weight: 400 !important;
@@ -52,4 +52,35 @@ img {
 .v-input .v-icon.v-icon { font-size: 18px !important; }
 .v-text-field--outlined.v-input--dense .v-label { top: 14px !important; }
 .v-input__prepend-outer { display: none !important; }
+
+
+.employee {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15%, 1fr));
+  grid-gap: 12px;  
+}
+.card__item {
+  border-radius: 6px;
+  overflow: hidden; 
+  position: relative; 
+  cursor: pointer;
+  transition: ease-in-out 250ms;
+  border: .5px solid #4f29893b;
+}
+.card__item:hover {
+  box-shadow: 0 2px 10px 0 #4f298941;
+  border: .5px solid transparent;
+}
+@media (max-width: 1100px) {
+  .employee { grid-template-columns: repeat(auto-fill, minmax(18%, 1fr)); }  
+}
+@media (max-width: 960px) {
+  .employee { grid-template-columns: repeat(auto-fill, minmax(23%, 1fr)); }  
+}
+@media (max-width: 760px) {
+  .employee { grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)); }  
+}
+@media (max-width: 560px) {
+  .employee { grid-template-columns: repeat(auto-fill, minmax(48%, 1fr)); }  
+}
 </style>

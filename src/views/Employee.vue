@@ -1,18 +1,8 @@
 <template>
   <div>
-    <v-fab-transition>
-      <v-tooltip top>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn color="primary" fab fixed bottom right v-bind="attrs" v-on="on" @click="dialog = true">
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-        <span>New Employee</span>
-      </v-tooltip>
-      
-    </v-fab-transition>
+    <FAB title="Employee" :open="() => dialog = true" />
     <v-container fluid class="employee">
-      <div class="employee__item px-3 py-6 white d-flex flex-column justify-center align-center text-center" v-for="(user, i) in users" :key="i">
+      <div class="card__item px-3 py-6 d-flex flex-column justify-center align-center text-center" v-for="(user, i) in users" :key="i">
         <div style="position: absolute; top: 6px; right: 6px;">
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
@@ -49,26 +39,17 @@
     <!-- Add Dialogue -->
     <v-dialog v-model="dialog" max-width="600" persistent>
       <v-card>
-        <v-card-title class="grey lighten-3 d-flex justify-space-between">
-          <div class="title">{{ isSave ? 'New' : 'Edit' }} Employee</div>
-          <v-btn color="red" icon @click="closeDialog">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
+        <CardTitle :title="isSave === true ? 'New Employee' : 'Update Employee'" :close="closeDialog" />
         <v-card-text class="pt-5">
-          <v-form ref="form" lazy-validation v-model="valid" class="d-flex flex-column" style="grid-gap: 12px;">
+          <v-form ref="form" lazy-validation v-model="valid" class="d-flex flex-column" style="grid-gap: 12px;" @submit.prevent>
             <div class="employee__form">
               <div class="d-flex flex-column" style="grid-gap: 12px;">
                 <v-text-field v-model="form.name" label="Full Name*" :rules="[ v => !!v || 'Name is required' ]" dense hide-details outlined />
                 <v-text-field v-model="form.mobile" label="Phone Number*" :rules="[ v => !!v || 'Mobile Number is required' ]" dense hide-details outlined type="number" />
               </div>
-              <label class="employee__img grey lighten-3" for="file">
-                <div v-if="form.image !== null" style="height: 100%; width: 100%;">
-                  <img :src="form.image">
-                </div>
-                <div v-else class="d-flex justify-center align-center" style="height: 100%; width: 100%;">
-                  <v-icon size="90">mdi-camera</v-icon>
-                </div>
+              <label class="employee__img grey lighten-3 d-flex justify-center align-center" for="file">
+                <img v-if="form.image !== null" :src="form.image">
+                <v-icon v-else v-text="'mdi-camera'" />
                 <input type="file" id="file" accept="image/*" class="d-none" @change="fileUpload">
               </label>
             </div>
@@ -76,11 +57,7 @@
             <v-text-field v-model="form.address" label="Address*" :rules="[ v => !!v || 'Address is required' ]" dense hide-details outlined />
           </v-form>
         </v-card-text>
-        <v-card-actions class="px-6 py-4 grey lighten-3">
-          <v-spacer />
-          <v-btn color="red" dark @click="reset">reset</v-btn>
-          <v-btn color="success" @click="isSave ? save : edit()">{{ isSave ? 'save' : 'edit' }}</v-btn>
-        </v-card-actions>
+        <CardAction :valid="valid" :reset="reset" :save="isSave === true ? save : edit" />
       </v-card>
     </v-dialog>
   </div>  
@@ -113,14 +90,16 @@ export default {
       this.reset()
       this.editId = null
       this.isSave = true
+      this.dialog = false
     },
     fileUpload(e) { 
       this.file = e.target.files[0]
-      this.img = URL.createObjectURL(this.file) 
+      this.form.image = URL.createObjectURL(this.file) 
     },
     reset() { 
       this.$refs.form.reset()
       this.file = null
+      this.form.image = null
       this.editId = null
     },
     save() {
@@ -129,7 +108,7 @@ export default {
         this.$store.dispatch({
           type: 'alertDialog',
           actionType: 1,
-          folder: 'employee',
+          text: 'Save',
           collection: 'employee',
           file: this.file,
           data: this.form
@@ -151,7 +130,7 @@ export default {
         this.dialog = false
         this.$store.dispatch({ 
           type: 'alertDialog', 
-          text: 'Edit', 
+          text: 'Update', 
           actionType: 2,
           file: this.file,
           collection: 'employee', 
@@ -168,37 +147,16 @@ export default {
 </script>
 
 <style scoped>
-.employee {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(18%, 1fr));
-  grid-gap: 12px;  
-}
-.employee__item {
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 1px 10px 0 #3cbf7736; 
-  position: relative; 
-  cursor: pointer;
-}
 .employee__form {
   display: grid;
   grid-template-columns: calc(100% - 112px) 100px;
   grid-gap: 12px;
 }
 .employee__img {
-  height: 100%;
-  width: 100%;
+  height: 100px;
+  width: 100px;
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
-}
-@media (max-width: 1100px) {
-  .employee { grid-template-columns: repeat(auto-fill, minmax(23%, 1fr)); }  
-}
-@media (max-width: 960px) {
-  .employee { grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)); }  
-}
-@media (max-width: 760px) {
-  .employee { grid-template-columns: repeat(auto-fill, minmax(48%, 1fr)); }  
 }
 </style>
