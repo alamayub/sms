@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer v-model="drawer" app color="primary" stateless width="120">
-    <div style="height: 150px;"></div>
+    <div style="height: 100px;"></div>
 
     <div class="nav pa-2 d-flex flex-column" style="grid-gap: 6px;">
       <v-btn color="white" v-for="(menu, m) in menus" :key="m" :to="menu.to" text>
