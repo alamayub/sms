@@ -1,6 +1,20 @@
 <template>
   <v-container fluid>
     <FAB title="Project" :open="() => dialog = true" />
+    
+    <!-- List Projects -->
+    <div class="projects">
+      <div class="card__item pa-4 d-flex flex-column" style="grid-gap: 8px;" v-for="(project, p) in projects" :key="p">
+        <div class="text__overflow text-capitalize" style="line-height: 1; -webkit-line-clamp: 1; font-weight: 500;">{{ project.title }}</div>
+        <div class="d-flex justify-space-between">
+          <v-chip small label text-color="primary">Rs.{{ project.budget }}</v-chip>
+          <v-chip small label :color="project.isRunning === true ? 'amber' : 'success'" v-text="project.isRunning === true ? 'Running' : 'Completed'" />
+        </div>
+        <p class="text__overflow" style="-webkit-line-clamp: 4;">{{ project.description }}</p>
+        <div class="caption font-weight-bold" style="line-height: 1;" v-text="`${project.startDate} - ${project.endDate}`" />
+      </div>
+    </div>
+
     <!-- Ad Dialog -->
     <v-dialog v-model="dialog" max-width="700" persistent>
       <v-card>
@@ -40,10 +54,12 @@
 </template>
 
 <script>
+import { db } from '../firebase'
 export default {
   data: () => ({
     dialog: false,
     valid: true,
+    projects: [],
     form: {
       title: null,
       budget: null,
@@ -57,6 +73,9 @@ export default {
     menu1: false,
     menu2: false,
     editId: null
+  }),
+  firestore: () => ({
+    projects: db.collection('projects').where('status', '==', true).orderBy('createdAt', 'desc')
   }),
   methods: {
     closeDialog() {

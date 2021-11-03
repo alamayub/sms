@@ -53,11 +53,31 @@ img {
 .v-text-field--outlined.v-input--dense .v-label { top: 14px !important; }
 .v-input__prepend-outer { display: none !important; }
 
+p {
+  font-size: 13px;
+  margin-bottom: 0 !important;
+  text-align: justify;
+  line-height: 1.4;
+}
 
+.text__overflow {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Employee */
 .employee {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(15%, 1fr));
   grid-gap: 12px;  
+}
+/* projects */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(23%, 1fr));
+  grid-gap: 12px;
 }
 .card__item {
   border-radius: 6px;
@@ -76,11 +96,16 @@ img {
 }
 @media (max-width: 960px) {
   .employee { grid-template-columns: repeat(auto-fill, minmax(23%, 1fr)); }  
+  .projects { grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)); }
 }
 @media (max-width: 760px) {
-  .employee { grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)); }  
+  .employee { grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)); } 
+  .projects { grid-template-columns: repeat(auto-fill, minmax(48%, 1fr)); } 
 }
 @media (max-width: 560px) {
   .employee { grid-template-columns: repeat(auto-fill, minmax(48%, 1fr)); }  
+}
+@media (max-width: 500px) {
+  .projects { grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); } 
 }
 </style>

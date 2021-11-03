@@ -1,7 +1,9 @@
 <template>
   <v-navigation-drawer v-model="drawer" app color="primary" stateless width="120">
-    <div style="height: 100px;"></div>
-
+    <div class="sidebar__logo">
+      <img src="../assets/sms.png" alt="SMS">
+    </div>
+    <v-divider style="background-color: rgb(255 255 255 / 50%) !important;" />
     <div class="nav pa-2 d-flex flex-column" style="grid-gap: 6px;">
       <v-btn color="white" v-for="(menu, m) in menus" :key="m" :to="menu.to" text>
         <v-icon size="20" v-text="menu.icon" />
@@ -49,4 +51,6 @@ export default {
   flex-direction: column !important;
   grid-gap: 6px !important;
 }
+.sidebar__logo { height: 100px; width: 100%; }
+.sidebar__logo img { object-fit: contain !important; }
 </style>

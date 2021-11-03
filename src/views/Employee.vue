@@ -26,6 +26,7 @@
             </v-list>
           </v-menu>
         </div>
+        <!-- <CardActionButton :editFunc="openEditModel(user)" :deleteFunc="deleteItem(user['.key'])" /> -->
         <v-avatar size="100">
           <img :src="user.image" :alt="user.name">
         </v-avatar>  

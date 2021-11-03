@@ -29,6 +29,8 @@ import CardTitle from './components/CardTitle'
 Vue.component('CardTitle', CardTitle)
 import CardAction from './components/CardAction'
 Vue.component('CardAction', CardAction)
+import CardActionButton from './components/CardActionButton'
+Vue.component('CardActionButton', CardActionButton)
 
 import { fb } from '@/firebase'
 router.beforeEach(async (to, from, next) => {
