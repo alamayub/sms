@@ -89,6 +89,7 @@ export default {
     },
     save() {
       if(this.$refs.form.validate()) {
+        this.form.budget = parseFloat(this.form.budget)
         this.dialog = false
         this.$store.dispatch({
           type: 'alertDialog',
@@ -101,7 +102,7 @@ export default {
     },
     openEditModel(data) {
       this.form.title = data.name
-      this.form.budget = data.mobile
+      this.form.budget = parseFloat(data.budget)
       this.form.mobile = data.mobile
       this.form.address = data.address
       this.form.startDate = data.image
@@ -113,6 +114,7 @@ export default {
     edit() {
       if(this.$refs.form.validate()) {
         this.dialog = false
+        this.form.budget = parseFloat(this.form.budget)
         this.$store.dispatch({ 
           type: 'alertDialog', 
           text: 'Update', 

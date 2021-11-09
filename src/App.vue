@@ -79,6 +79,12 @@ p {
   grid-template-columns: repeat(auto-fill, minmax(23%, 1fr));
   grid-gap: 12px;
 }
+/* Attendance */
+.attendance {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(22%, 1fr));
+  grid-gap: 12px;
+}
 .card__item {
   border-radius: 6px;
   overflow: hidden; 
@@ -97,15 +103,18 @@ p {
 @media (max-width: 960px) {
   .employee { grid-template-columns: repeat(auto-fill, minmax(23%, 1fr)); }  
   .projects { grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)); }
+  .attendance { grid-template-columns: repeat(auto-fit, minmax(30%, 1fr)); }
 }
 @media (max-width: 760px) {
   .employee { grid-template-columns: repeat(auto-fill, minmax(30%, 1fr)); } 
   .projects { grid-template-columns: repeat(auto-fill, minmax(48%, 1fr)); } 
+  .attendance { grid-template-columns: repeat(auto-fit, minmax(48%, 1fr)); }
 }
 @media (max-width: 560px) {
   .employee { grid-template-columns: repeat(auto-fill, minmax(48%, 1fr)); }  
 }
 @media (max-width: 500px) {
   .projects { grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); } 
+  .attendance { grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)); }
 }
 </style>

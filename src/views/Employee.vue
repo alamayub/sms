@@ -106,6 +106,7 @@ export default {
     save() {
       if(this.$refs.form.validate()) {
         this.dialog = false
+        this.form.rate = parseFloat(this.form.rate)
         this.$store.dispatch({
           type: 'alertDialog',
           actionType: 1,
@@ -129,6 +130,7 @@ export default {
     edit() {
       if(this.$refs.form.validate()) {
         this.dialog = false
+        this.form.rate = parseFloat(this.form.rate)
         this.$store.dispatch({ 
           type: 'alertDialog', 
           text: 'Update', 

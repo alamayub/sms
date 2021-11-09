@@ -82,15 +82,13 @@ export default new Vuex.Store({
         data['updatedAt'] = new Date().getTime()
         data['status'] = true
         db.collection(collection).add(data).then( () => {
-          commit('SET_OVERLAY', false)
           Swal.fire('Saved!', 'Your file has been saved successfully.', 'success')
           resolve()
         }).catch( e => {
-          commit('SET_OVERLAY', false)
           Swal.fire('Error!', e.message, 'error')
           reject(e)
         })
-      })
+      }).finally(() => commit('SET_OVERLAY', false))
     },
     // image upload 
     uploadImage({ commit }, { folder, file }) {
@@ -102,16 +100,14 @@ export default new Vuex.Store({
           let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(progress)
         }, e => {
-          commit('SET_OVERLAY', false)
           Swal.fire('Error!', e.message, 'error')
           reject(false)
         }, () => {
           uploadTask.snapshot.ref.getDownloadURL().then( url => {
-            commit('SET_OVERLAY', false)
             resolve(url)
           })
         })
-      })
+      }).finally(() => commit('SET_OVERLAY', false))
     },
     // delete item
     deleteItem({ commit }, { collection, id }) {
@@ -121,15 +117,13 @@ export default new Vuex.Store({
           status: false,
           updatedAt: new Date().getTime()
         }).then( () => {
-          commit('SET_OVERLAY', false)
           Swal.fire('Deleted!', 'Your file has been deleted successfully.', 'success')
           resolve()
         }).catch( e => {
           Swal.fire('Error!', e.message, 'error')
-          commit('SET_OVERLAY', false)
           reject(e)
         })
-      })
+      }).finally(() => commit('SET_OVERLAY', false))
     },
     // edit item
     edit({ commit }, { collection, id, data }) {
@@ -137,17 +131,13 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {  
         data['updatedAt'] = new Date().getTime()
         db.collection(collection).doc(id).update(data).then( () => {
-          commit('SET_OVERLAY', false)
           Swal.fire('Updated!', 'Your file has been updated successfully.', 'success')
           resolve()
         }).catch( e => {
           Swal.fire('Error!', e.message, 'error')
-          commit('SET_OVERLAY', false)
           reject(e)
         })
-      })
+      }).finally(() => commit('SET_OVERLAY', false))
     }
   },
-  modules: {
-  }
 })
