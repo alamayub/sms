@@ -9,11 +9,13 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     drawer: null,
-    overlay: false
+    overlay: false,
+    table_load: false
   },
   mutations: {
     SET_DRAWER: (state, val) => state.drawer = val,
-    SET_OVERLAY: (state, val) => state.overlay = val
+    SET_OVERLAY: (state, val) => state.overlay = val,
+    SET__TABLE_LOAD: (state, val) => state.table_load = val
   },
   actions: {
     // login

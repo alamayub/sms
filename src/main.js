@@ -18,7 +18,8 @@ Vue.mixin({
       { title: 'Attendance', icon: 'mdi-poll', to: '/attendance' },
       { title: 'Projects', icon: 'mdi-clipboard-list-outline', to: '/projects' },
       { title: 'Employee', icon: 'mdi-account-group', to: '/employee' },
-      { title: 'Report', icon: 'mdi-post', to: '/report' }
+      { title: 'Report', icon: 'mdi-post', to: '/report' },
+      { title: 'Expenses', icon: 'mdi-cash', to: '/expenses' }
     ]
   })
 })
@@ -31,6 +32,9 @@ import CardAction from './components/CardAction'
 Vue.component('CardAction', CardAction)
 import CardActionButton from './components/CardActionButton'
 Vue.component('CardActionButton', CardActionButton)
+
+import DataTable from './components/DataTable'
+Vue.component('DataTable', DataTable)
 
 import { fb } from '@/firebase'
 router.beforeEach(async (to, from, next) => {

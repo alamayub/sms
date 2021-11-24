@@ -42,7 +42,7 @@ img {
   font-weight: 400 !important;
   letter-spacing: 1px !important;
 }
-.v-input input { font-size: 13px !important; }
+.v-input input { font-size: 13px !important; text-transform: capitalize !important; }
 .v-input .v-label { 
   line-height: 1 !important;
   font-size: small !important;

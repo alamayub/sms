@@ -16,7 +16,8 @@ const routes = [
       { path: 'dashboard', name: 'Dashboard', component: () => import('../views/Dashboard') },
       { path: 'attendance', name: 'Attendance', component: () => import('../views/Attendance') },
       { path: 'projects', name: 'Projects', component: () => import('../views/Projects') },
-      { path: 'employee', name: 'Employee', component: () => import('../views/Employee') }
+      { path: 'employee', name: 'Employee', component: () => import('../views/Employee') },
+      { path: 'expenses', name: 'Expenses', component: () => import('../views/Expenses') },
     ]
   },
   
