@@ -53,6 +53,19 @@ img {
 .v-text-field--outlined.v-input--dense .v-label { top: 14px !important; }
 .v-input__prepend-outer { display: none !important; }
 
+/* DataTables */
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th:first-child, table > thead > tr > th:first-child { width: 40px !important; }
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th:last-child, table > thead > tr > th:last-child { width: 80px !important; }
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td, table > tbody > tr > td,
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th, table > thead > tr > th,
+.v-data-table > .v-data-table__wrapper > table > tfoot > tr > td, table > tfoot > tr > td { 
+  padding: 0 10px !important; 
+  height: 36px !important;
+  font-weight: normal !important; 
+  font-size: 13px !important;
+}
+.date { width: 175px !important; }
+
 p {
   font-size: 13px;
   margin-bottom: 0 !important;

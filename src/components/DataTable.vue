@@ -7,15 +7,15 @@
       <template v-slot:[`item.sno`]="{ item }">
         <v-chip outlined x-small class="font-weight-bold">{{ getSNO(item)+1 }}</v-chip>
       </template>
-      <template v-slot:[`item.actions`]="{  }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" small icon v-bind="attrs" v-on="on">
               <v-icon small>mdi-dots-horizontal</v-icon>
             </v-btn>
           </template>
-          <v-list nav dense class="pa-0" width="200">
-            <v-list-item dense v-for="(a, index) in actions" :key="index" >
+          <v-list nav dense class="pa-0" width="100">
+            <v-list-item dense v-for="(a, index) in actions" :key="index" @click="action(item, a.type)">
               <v-list-item-icon class="mx-2">
                 <v-icon small :color="a.color" v-text="a.icon" />
               </v-list-item-icon>
@@ -53,6 +53,9 @@ export default {
     getSNO(item) {
       return this.items.indexOf(item)
     },  
+    action(data, type) {
+      this.$emit('action', { data, type })
+    }
   }
 }
 </script>
