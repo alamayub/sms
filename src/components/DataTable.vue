@@ -7,6 +7,20 @@
       <template v-slot:[`item.sno`]="{ item }">
         <v-chip outlined x-small class="font-weight-bold">{{ getSNO(item)+1 }}</v-chip>
       </template>
+      <template v-slot:[`item.createdAt`]="{ item }">
+        <div class="caption font-weight-bold">{{ getFinalDate(item.createdAt) }}</div>
+      </template>
+      <template v-slot:[`item.updatedAt`]="{ item }">
+        <div class="caption font-weight-bold">{{ getFinalDate(item.updatedAt) }}</div>
+      </template>
+      <template v-slot:[`item.date`]="{ item }">
+        <div class="caption font-weight-bold">{{ getFinalDate(item.date) }}</div>
+      </template>
+      <template v-slot:[`item.amount`]="{ item }">
+        <div class="caption font-weight-bold">{{ item.amount }}</div>
+      </template>
+      <template v-slot:[`item.expenseName`]="{ item }">{{ item.expenseName }}</template>
+      <template v-slot:[`item.projectName`]="{ item }">{{ item.projectName }}</template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -52,6 +66,9 @@ export default {
   methods: {
     getSNO(item) {
       return this.items.indexOf(item)
+    },
+    getFinalDate(date) {
+      return date !== null ? new Date(date).toLocaleDateString() : '--'
     },  
     action(data, type) {
       this.$emit('action', { data, type })

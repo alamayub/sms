@@ -35,11 +35,12 @@ export default {
       { text: 'Name', align: 'start', value: 'name', class: 'primary white--text' },
       { text: 'Remarks', align: 'start', value: 'remarks', sortable: false, class: 'primary white--text' },
       { text: 'Created Date',align: 'center', value: 'createdAt', sortable: false, class: 'primary date white--text' },
+      { text: 'Updated Date',align: 'center', value: 'updatedAt', sortable: false, class: 'primary date white--text' },
       { text: 'Action (s)', align: 'center', value: 'actions', sortable: false, class: 'primary white--text' },
     ], 
     actions: [
       { name: 'Edit', icon: 'mdi-pencil', color: 'success', type: 2 },
-      { name: 'Delete', icon: 'mdi-delete', color: 'red', url: 'expenses',type: 3 }
+      { name: 'Delete', icon: 'mdi-delete', color: 'red', type: 3 }
     ],
     items: [] 
   }),
@@ -48,10 +49,12 @@ export default {
   }),  
   methods: {
     action({data, type}) {
-      console.log(data, type)
       if(type === 2) {
-        this.openEditModel(data)
-      }
+        this.form.name = data.name
+        this.form.remarks = data.remarks
+        this.editId = data['.key']
+        this.dialog = true
+      } else if(type === 3) this.$store.dispatch({ type: 'alertDialog', text: 'Delete', actionType: 3, collection: 'expensesCategory', id: data['.key'] })
     },
     closeDialog() {
       this.reset()
@@ -74,13 +77,6 @@ export default {
           data: this.form
         }).then( () => this.reset()).catch( () => this.dialog = false)
       }  
-    },
-    openEditModel(data) {
-      this.form.name = data.name
-      this.form.remarks = data.remarks
-      this.editId = data['.key']
-      console.log(this.editId)
-      this.dialog = true
     },
     edit() {
       if(this.$refs.form.validate()) {

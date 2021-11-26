@@ -14,6 +14,7 @@ const routes = [
     redirect: '/dashboard',
     children: [
       { path: 'dashboard', name: 'Dashboard', component: () => import('../views/Dashboard') },
+      { path: 'expenses', name: 'Expense', component: () => import('../views/Expenses') },
       { path: 'attendance', name: 'Attendance', component: () => import('../views/Attendance') },
       { path: 'projects', name: 'Projects', component: () => import('../views/Projects') },
       { path: 'employee', name: 'Employee', component: () => import('../views/Employee') },

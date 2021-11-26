@@ -27,6 +27,9 @@ export default {
   font-weight: 400 !important;
   font-size: 13px !important;
   text-transform: capitalize !important;
+  width: 100%;
+  white-space: normal;
+  text-align: center;
 }
 img {
   display: block;

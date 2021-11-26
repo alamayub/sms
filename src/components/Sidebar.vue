@@ -49,7 +49,7 @@ export default {
 }
 .nav .v-btn__content {
   flex-direction: column !important;
-  grid-gap: 6px !important;
+  grid-gap: 4px !important;
 }
 .sidebar__logo { height: 100px; width: 100%; }
 .sidebar__logo img { object-fit: contain !important; }
