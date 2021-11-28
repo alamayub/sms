@@ -19,6 +19,18 @@
       <template v-slot:[`item.amount`]="{ item }">
         <div class="caption font-weight-bold">{{ item.amount }}</div>
       </template>
+      <!-- Attendance User -->
+      <template v-slot:[`item.employee`]="{ item }">
+        <div class="d-flex align-center py-1" style="grid-gap: 8px;">
+          <v-avatar>
+            <v-img :src="item.employeeImage" :lazy-src="item.employeeImage" :alt="item.employeeName" />
+          </v-avatar>
+          <div>
+            <div style="font-size: 16px; font-weight: 500; line-height: 1;">{{ item.employeeName }}</div>
+            <div class="caption font-weight-bold mt-1" style="color: rgb(0 0 0 / 40%); line-height: 1;">{{ item.employeeMobile }}</div>
+          </div>
+        </div>
+      </template>
       <template v-slot:[`item.expenseName`]="{ item }">{{ item.expenseName }}</template>
       <template v-slot:[`item.projectName`]="{ item }">{{ item.projectName }}</template>
       <template v-slot:[`item.actions`]="{ item }">

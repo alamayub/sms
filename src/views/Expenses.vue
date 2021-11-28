@@ -51,6 +51,7 @@ export default {
       { text: 'Expense', align: 'start', value: 'expenseName', class: 'primary name white--text' },
       { text: 'Project', align: 'start', value: 'projectName', class: 'primary name white--text' },
       { text: 'Amount (Rs.)', align: 'center', value: 'amount', class: 'primary name white--text' },
+      { text: 'Remarks', align: 'center', sortable: false, value: 'remarks', class: 'primary name white--text' },
       { text: 'Date',align: 'center', value: 'date', class: 'primary date white--text' },
       { text: 'Action (s)', align: 'center', value: 'actions', sortable: false, class: 'primary action white--text' },
     ],

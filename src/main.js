@@ -19,7 +19,7 @@ Vue.mixin({
       { title: 'Attendance', icon: 'mdi-poll', to: '/attendance' },
       { title: 'Projects', icon: 'mdi-clipboard-list-outline', to: '/projects' },
       { title: 'Employee', icon: 'mdi-account-group', to: '/employee' },
-      { title: 'Report', icon: 'mdi-post', to: '/report' },
+      { title: 'Reports', icon: 'mdi-post', to: '/reports' },
       { title: 'Expense Category', icon: 'mdi-cash', to: '/expense-category' }
     ]
   })

@@ -3,26 +3,15 @@
     <FAB title="Attendance" :open="() => dialog = true" />
 
     <!-- List page -->
-    <v-list class="attendance py-0">
-      <v-list-item v-for="(user, i) in attendance" :key="i" class="card__item py-2">
-        <v-list-item-avatar size="60">
-          <v-img :src="getEmployee(user.employeeId).image" :lazy-src="getEmployee(user.employeeId).image" :alt="getEmployee(user.employeeId).name" />
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title v-text="getEmployee(user.employeeId).name" />
-          <v-list-item-subtitle class="caption" v-text="`Attendance ${user.noOfAttendance}`" />
-          <v-list-item-subtitle class="caption" v-text="user.date" />
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
+    <DataTable :header="header" :items="attendance" :actions="actions" @action="action" />
       
     <!-- Add Dialogue -->
     <v-dialog v-model="dialog" max-width="600" persistent>
       <v-card>
-        <CardTitle :title="editId === null ? 'New Employee' : 'Update Employee'" :close="closeDialog" />
+        <CardTitle :title="editId === null ? 'New Attendance' : 'Update Attendance'" :close="closeDialog" />
         <v-card-text class="pt-5">
           <v-form ref="form" lazy-validation v-model="valid" class="d-flex flex-column" style="grid-gap: 12px;" @submit.prevent>
-            <v-autocomplete v-model="form.employeeIds" :items="employee" dense outlined hide-details chips color="primary" label="Employees*" :item-text="item => item['.key']" multiple :rules="[v => !!v || '']">
+            <v-autocomplete :disabled="editId !== null" v-model="form.employeeIds" :items="employee" dense outlined hide-details chips color="primary" label="Employees*" :item-text="item => item['.key']" multiple :rules="[v => !!v || '']">
               <template v-slot:selection="data">
                 <v-chip v-bind="data.attrs" :input-value="data.selected" close @click="data.select" @click:close="remove(data.item)">
                   <v-avatar left>
@@ -76,16 +65,48 @@ export default {
     },
     attendance: [],
     employee: [],
-    projects: []
-  }),
-  firestore: () =>({
-    employee: db.collection('employee').where('status', '==', true).orderBy('createdAt', 'desc'),
-    attendance: db.collection('attendance').where('status', '==', true).orderBy('createdAt', 'desc'),
-    projects: db.collection('projects').where('status', '==', true).orderBy('createdAt', 'desc')
+    projects: [],
+    header: [
+      { text: 'S.N.',  align: 'center', sortable: false, value: 'sno', class: 'primary white--text' },
+      { text: 'Employee', align: 'start', sortable: false, value: 'employee', class: 'primary name white--text' },
+      { text: 'Project', align: 'start', sortable: false, value: 'projectName', class: 'primary white--text' },
+      { text: 'Attendance', align: 'center', sortable: false, value: 'noOfAttendance', class: 'primary white--text' },
+      { text: 'Amount(Rs.)', align: 'end', sortable: false, value: 'amount', class: 'primary white--text' },
+      { text: 'Date', align: 'center', value: 'date', class: 'primary date white--text' },
+      { text: 'Action (s)', align: 'center', value: 'actions', sortable: false, class: 'primary action white--text' },
+    ],
+    actions: [
+      { name: 'Edit', icon: 'mdi-pencil', color: 'success', type: 2 },
+      { name: 'Delete', icon: 'mdi-delete', color: 'red', type: 3 }
+    ],
   }),
   methods: {
-    getEmployee(id) {
-      return this.employee.find(x => x['.key'] === id)
+    action({data, type}) {
+      console.log(data)
+      if(type === 2) {
+        this.form.employeeIds = data.employeeId
+        this.form.noOfAttendance = data.noOfAttendance
+        this.form.projectId = data.projectId
+        this.form.date = data.date
+        this.editId = data['.key']
+        this.dialog = true
+      } else if(type === 3) this.$store.dispatch({ type: 'alertDialog', text: 'Delete', actionType: 3, collection: 'attendance', id: data['.key'] })
+    },
+    async get() {
+      await this.$binding("employee", db.collection('employee').where('status', '==', true).orderBy('createdAt', 'desc'))
+      await this.$binding("projects", db.collection('projects').where('status', '==', true).orderBy('createdAt', 'desc'))
+      await this.$binding("attendance", db.collection('attendance').where('status', '==', true).orderBy('createdAt', 'desc')).then(docs => {
+        docs.forEach(doc => {
+          let y = this.employee.find(x => x['.key'] === doc.employeeId)
+          doc.employeeName = y.name
+          doc.employeeImage = y.image
+          doc.employeeMobile = y.mobile
+          if(doc.projectId != null) {
+            let p = this.projects.find(y => y['.key'] === doc.projectId)
+            doc.projectName = p.title
+          }
+        })
+      })
     },
     remove (item) {
       const index = this.form.employeeIds.indexOf(item['.key'])
@@ -122,6 +143,9 @@ export default {
                 let amount = parseFloat(this.form.noOfAttendance * rate)
                 await db.collection('attendance').add({
                   employeeId: empId,
+                  employeeName: null,
+                  employeeImage: null,
+                  employeeMobile: null,
                   projectId: this.form.projectId,
                   date: this.form.date,
                   noOfAttendance: this.form.noOfAttendance,
@@ -156,6 +180,7 @@ export default {
                   })                 
                 }).catch( e => Swal.fire('Error!', e.message, 'error'))
               })
+              this.get()
             } else reject()
           })
         }).then(() => {
@@ -164,27 +189,51 @@ export default {
         }).catch(() => this.dialog = true).finally(() => this.$store.commit('SET_OVERLAY', false))
       }
     },
-    openEditModel(data) {
-      console.log(data)
-      this.editId = data['.key']
-      this.dialog = true
-    },
-    edit() {
+    async edit() {
       if(this.$refs.form.validate()) {
         this.dialog = false
-        this.$store.dispatch({ 
-          type: 'alertDialog', 
-          text: 'Update', 
-          actionType: 2,
-          collection: 'attendance', 
-          data: this.form, 
-          id: this.editId
-        }).then( () => { this.reset() }).catch( () => this.dialog = true)
+        return new Promise((resolve, reject) => {
+          this.form.noOfAttendance = parseFloat(this.form.noOfAttendance)
+          let emp = this.employee.find(a => a['.key'] === this.form.employeeIds)
+          let rate = parseFloat(emp.rate)
+          let amount = parseFloat(this.form.noOfAttendance * rate)
+          db.collection('attendance').doc(this.editId).update({
+            projectId: this.form.projectId,
+            date: this.form.date,
+            noOfAttendance: this.form.noOfAttendance,
+            amount: amount,
+            updatedAt: new Date().getTime(),
+          }).then(async () => {
+            await db.collection('khatabook').doc(this.form.employeeIds).update({ 
+              updatedAt: new Date().getTime(),
+              totalAmount: amount 
+            }).then(async () => {
+              await db.collection('khatabook').doc(this.form.employeeIds).collection('history').where('attendanceId', '==', this.editId).update({
+                salary: amount,
+                date: this.form.date,
+                updatedAt: new Date().getTime(),
+              }).then(() => resolve()).catch( e => {
+                Swal.fire('Error!', e.message, 'error')
+                reject()
+              })
+            }).catch( e => {
+              Swal.fire('Error!', e.message, 'error')
+              reject()
+            })          
+          }).catch( e => {
+            Swal.fire('Error!', e.message, 'error')
+            reject()
+          })
+        }).catch(() => this.dialog = true).finally(() => this.$store.commit('SET_OVERLAY', false))
       }
     },
-    deleteItem(id) {
-      this.$store.dispatch({ type: 'alertDialog', text: 'Delete', actionType: 3, collection: 'attendance', id: id })
+    deleteItem(item) {
+      // this.$store.dispatch({ type: 'alertDialog', text: 'Delete', actionType: 3, collection: 'attendance', id: id })
+      console.log(item)
     },
+  },
+  created() {
+    this.get()
   }
 }
 </script>
