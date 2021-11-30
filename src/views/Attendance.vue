@@ -82,7 +82,6 @@ export default {
   }),
   methods: {
     action({data, type}) {
-      console.log(data)
       if(type === 2) {
         this.form.employeeIds = data.employeeId
         this.form.noOfAttendance = data.noOfAttendance
@@ -193,10 +192,13 @@ export default {
       if(this.$refs.form.validate()) {
         this.dialog = false
         return new Promise((resolve, reject) => {
-          this.form.noOfAttendance = parseFloat(this.form.noOfAttendance)
-          let emp = this.employee.find(a => a['.key'] === this.form.employeeIds)
-          let rate = parseFloat(emp.rate)
-          let amount = parseFloat(this.form.noOfAttendance * rate)
+          this.$store.commit('SET_OVERLAY', true)
+          let employee = this.employee.find(a => a['.key'] === this.form.employeeIds)
+          let rate = parseFloat(employee.rate)
+          let empAttendance = this.attendance.find(a => a['.key'] === this.editId)
+          let oldAmount = rate * parseFloat(empAttendance.noOfAttendance)
+          let newAmount = rate * parseFloat(this.form.noOfAttendance)
+          let amount = oldAmount - newAmount
           db.collection('attendance').doc(this.editId).update({
             projectId: this.form.projectId,
             date: this.form.date,
@@ -204,22 +206,34 @@ export default {
             amount: amount,
             updatedAt: new Date().getTime(),
           }).then(async () => {
-            await db.collection('khatabook').doc(this.form.employeeIds).update({ 
-              updatedAt: new Date().getTime(),
-              totalAmount: amount 
-            }).then(async () => {
-              await db.collection('khatabook').doc(this.form.employeeIds).collection('history').where('attendanceId', '==', this.editId).update({
-                salary: amount,
-                date: this.form.date,
+            let khatabook = db.collection('khatabook').doc(this.form.employeeIds)
+            await khatabook.get().then(async kb => {
+              let totalAmount = kb.data().totalAmount + amount
+              await khatabook.update({ 
                 updatedAt: new Date().getTime(),
-              }).then(() => resolve()).catch( e => {
+                totalAmount: totalAmount 
+              }).then(async () => {
+                await khatabook.collection('history').where('attendanceId', '==', this.editId).get().then(doc => {
+                  console.log(doc.docs[0])
+                  if(doc.docs[0].exists) console.log(doc.docs[0].data())
+                })
+                // await khatabook.collection('history').where('attendanceId', '==', this.editId).update({
+                //   salary: amount,
+                //   date: this.form.date,
+                //   updatedAt: new Date().getTime(),
+                // }).then(() => resolve()).catch( e => {
+                //   Swal.fire('Error!', e.message, 'error')
+                //   reject()
+                // })
+                resolve()
+              }).catch( e => {
                 Swal.fire('Error!', e.message, 'error')
                 reject()
-              })
+              }) 
             }).catch( e => {
               Swal.fire('Error!', e.message, 'error')
               reject()
-            })          
+            }) 
           }).catch( e => {
             Swal.fire('Error!', e.message, 'error')
             reject()
