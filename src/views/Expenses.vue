@@ -63,11 +63,6 @@ export default {
     projects: [],
     expenses: []
   }),
-  // firestore: () => ({
-  //   expenses: db.collection('expenses').where('status', '==', true).orderBy('createdAt', 'desc'),
-  //   projects: db.collection('projects').where('status', '==', true).orderBy('createdAt', 'desc'),
-  //   expenseCategory: db.collection('expensesCategory').where('status', '==', true).orderBy('createdAt', 'desc'),
-  // }),
   methods: {
     action({data, type}) {
       if(type === 2) {
@@ -122,9 +117,9 @@ export default {
       }
     },
     async get() {
-      await this.$binding("expenseCategory", db.collection('expensesCategory').where('status', '==', true).orderBy('createdAt', 'desc'))
-      await this.$binding("projects", db.collection('projects').where('status', '==', true).orderBy('createdAt', 'desc'))
-      await this.$binding("expenses", db.collection('expenses').where('status', '==', true).orderBy('createdAt', 'desc')).then(docs => {
+      await this.$binding("expenseCategory", db.collection('expensesCategory').orderBy('createdAt', 'desc'))
+      await this.$binding("projects", db.collection('projects').orderBy('createdAt', 'desc'))
+      await this.$binding("expenses", db.collection('expenses').orderBy('createdAt', 'desc')).then(docs => {
         docs.forEach(doc => {
           let y = this.expenseCategory.find(x => x['.key'] === doc.expenseCategoryId)
           doc.expenseName = y.name

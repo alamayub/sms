@@ -83,7 +83,7 @@ export default {
     users: []
   }),
   firestore: () =>({
-    users: db.collection('employee').where('status', '==', true).orderBy('createdAt', 'desc')
+    users: db.collection('employee').orderBy('createdAt', 'desc')
   }),
   methods: {
     closeDialog() {

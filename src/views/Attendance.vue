@@ -81,7 +81,7 @@ export default {
     ],
   }),
   methods: {
-    action({data, type}) {
+    action({ data, type }) {
       if(type === 2) {
         this.form.employeeIds = data.employeeId
         this.form.noOfAttendance = data.noOfAttendance
@@ -89,12 +89,62 @@ export default {
         this.form.date = data.date
         this.editId = data['.key']
         this.dialog = true
-      } else if(type === 3) this.$store.dispatch({ type: 'alertDialog', text: 'Delete', actionType: 3, collection: 'attendance', id: data['.key'] })
+      } else if(type === 3) {
+        return new Promise((resolve, reject) => {
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: `Yes, delete it!`
+          }).then(async result => {
+            if (result.isConfirmed) {
+              this.$store.commit('SET_OVERLAY', true)
+              let khatabook = db.collection('khatabook').doc(data.employeeId)
+              khatabook.get().then(async x => {
+                let ta = x.data().totalAmount - data.amount
+                await khatabook.update({
+                  totalAmount: ta,
+                  updatedAt: new Date().getTime(),
+                }).then(async () => {
+                  await khatabook.collection('history').where('attendanceId', '==', data['.key']).get().then(async doc => {
+                    if(doc.docs[0].exists) {
+                      await khatabook.collection('hostory').doc(doc.docs[0].id).delete().then(async () => {
+                        await db.collection('attendance').doc(data['.key']).delete().then(() => {
+                          Swal.fire('Deleted!', 'Your file has been deleted successfully.', 'success')
+                          resolve()
+                        }).catch( e => {
+                          Swal.fire('Error!', e.message, 'error')
+                          reject()
+                        }) 
+                      }).catch( e => {
+                        Swal.fire('Error!', e.message, 'error')
+                        reject()
+                      }) 
+                    } else reject()
+                  }).catch( e => {
+                    Swal.fire('Error!', e.message, 'error')
+                    reject()
+                  }) 
+                }).catch( e => {
+                  Swal.fire('Error!', e.message, 'error')
+                  reject()
+                }) 
+              }).catch( e => {
+                Swal.fire('Error!', e.message, 'error')
+                reject()
+              })  
+            } else reject()
+          })
+        }).finally(() => this.$store.commit('SET_OVERLAY', false))
+      }
     },
     async get() {
-      await this.$binding("employee", db.collection('employee').where('status', '==', true).orderBy('createdAt', 'desc'))
-      await this.$binding("projects", db.collection('projects').where('status', '==', true).orderBy('createdAt', 'desc'))
-      await this.$binding("attendance", db.collection('attendance').where('status', '==', true).orderBy('createdAt', 'desc')).then(docs => {
+      await this.$binding("employee", db.collection('employee').orderBy('createdAt', 'desc'))
+      await this.$binding("projects", db.collection('projects').orderBy('createdAt', 'desc'))
+      await this.$binding("attendance", db.collection('attendance').orderBy('createdAt', 'desc')).then(docs => {
         docs.forEach(doc => {
           let y = this.employee.find(x => x['.key'] === doc.employeeId)
           doc.employeeName = y.name
@@ -198,12 +248,12 @@ export default {
           let empAttendance = this.attendance.find(a => a['.key'] === this.editId)
           let oldAmount = rate * parseFloat(empAttendance.noOfAttendance)
           let newAmount = rate * parseFloat(this.form.noOfAttendance)
-          let amount = oldAmount - newAmount
+          let amount = newAmount - oldAmount
           db.collection('attendance').doc(this.editId).update({
             projectId: this.form.projectId,
             date: this.form.date,
             noOfAttendance: this.form.noOfAttendance,
-            amount: amount,
+            amount: newAmount,
             updatedAt: new Date().getTime(),
           }).then(async () => {
             let khatabook = db.collection('khatabook').doc(this.form.employeeIds)
@@ -213,19 +263,25 @@ export default {
                 updatedAt: new Date().getTime(),
                 totalAmount: totalAmount 
               }).then(async () => {
-                await khatabook.collection('history').where('attendanceId', '==', this.editId).get().then(doc => {
-                  console.log(doc.docs[0])
-                  if(doc.docs[0].exists) console.log(doc.docs[0].data())
-                })
-                // await khatabook.collection('history').where('attendanceId', '==', this.editId).update({
-                //   salary: amount,
-                //   date: this.form.date,
-                //   updatedAt: new Date().getTime(),
-                // }).then(() => resolve()).catch( e => {
-                //   Swal.fire('Error!', e.message, 'error')
-                //   reject()
-                // })
-                resolve()
+                await khatabook.collection('history').where('attendanceId', '==', this.editId).get().then(async doc => {
+                  if(doc.docs[0].exists) {
+                    await khatabook.collection('history').doc(doc.docs[0].id).update({
+                      salary: newAmount,
+                      date: this.form.date,
+                      updatedAt: new Date().getTime(),
+                    }).then(() => {
+                      Swal.fire('Updated!', 'Updated successfully!', 'success')
+                      this.get()
+                      resolve()
+                    }).catch( e => {
+                      Swal.fire('Error!', e.message, 'error')
+                      reject()
+                    })
+                  } else reject()
+                }).catch( e => {
+                  Swal.fire('Error!', e.message, 'error')
+                  reject()
+                }) 
               }).catch( e => {
                 Swal.fire('Error!', e.message, 'error')
                 reject()
@@ -240,10 +296,6 @@ export default {
           })
         }).catch(() => this.dialog = true).finally(() => this.$store.commit('SET_OVERLAY', false))
       }
-    },
-    deleteItem(item) {
-      // this.$store.dispatch({ type: 'alertDialog', text: 'Delete', actionType: 3, collection: 'attendance', id: id })
-      console.log(item)
     },
   },
   created() {

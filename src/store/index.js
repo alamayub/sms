@@ -82,7 +82,6 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         data['createdAt'] = new Date().getTime()
         data['updatedAt'] = new Date().getTime()
-        data['status'] = true
         db.collection(collection).add(data).then( () => {
           Swal.fire('Saved!', 'Your file has been saved successfully.', 'success')
           resolve()
@@ -115,10 +114,7 @@ export default new Vuex.Store({
     deleteItem({ commit }, { collection, id }) {
       commit('SET_OVERLAY', true)
       return new Promise((resolve, reject) => {      
-        db.collection(collection).doc(id).update({
-          status: false,
-          updatedAt: new Date().getTime()
-        }).then( () => {
+        db.collection(collection).doc(id).delete().then(() => {
           Swal.fire('Deleted!', 'Your file has been deleted successfully.', 'success')
           resolve()
         }).catch( e => {

@@ -45,7 +45,7 @@ export default {
     items: [] 
   }),
   firestore: () =>({
-    items: db.collection('expensesCategory').where('status', '==', true).orderBy('createdAt', 'desc')
+    items: db.collection('expensesCategory').orderBy('createdAt', 'desc')
   }),  
   methods: {
     action({data, type}) {

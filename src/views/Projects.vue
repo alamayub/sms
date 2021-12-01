@@ -75,7 +75,7 @@ export default {
     editId: null
   }),
   firestore: () => ({
-    projects: db.collection('projects').where('status', '==', true).orderBy('createdAt', 'desc')
+    projects: db.collection('projects').orderBy('createdAt', 'desc')
   }),
   methods: {
     closeDialog() {
