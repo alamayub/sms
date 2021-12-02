@@ -109,25 +109,18 @@ export default {
                   totalAmount: ta,
                   updatedAt: new Date().getTime(),
                 }).then(async () => {
-                  await khatabook.collection('history').where('attendanceId', '==', data['.key']).get().then(async doc => {
-                    if(doc.docs[0].exists) {
-                      await khatabook.collection('hostory').doc(doc.docs[0].id).delete().then(async () => {
-                        await db.collection('attendance').doc(data['.key']).delete().then(() => {
-                          Swal.fire('Deleted!', 'Your file has been deleted successfully.', 'success')
-                          resolve()
-                        }).catch( e => {
-                          Swal.fire('Error!', e.message, 'error')
-                          reject()
-                        }) 
-                      }).catch( e => {
-                        Swal.fire('Error!', e.message, 'error')
-                        reject()
-                      }) 
-                    } else reject()
+                  await khatabook.collection('history').doc(data['.key']).delete().then(async () => {
+                    await db.collection('attendance').doc(data['.key']).delete().then(() => {
+                      Swal.fire('Deleted!', 'The corresponding attendance has been deleted successfully.', 'success')
+                      resolve()
+                    }).catch( e => {
+                      Swal.fire('Error!', e.message, 'error')
+                      reject()
+                    })
                   }).catch( e => {
                     Swal.fire('Error!', e.message, 'error')
                     reject()
-                  }) 
+                  })
                 }).catch( e => {
                   Swal.fire('Error!', e.message, 'error')
                   reject()
@@ -201,40 +194,54 @@ export default {
                   amount: amount,
                   createdAt: new Date().getTime(),
                   updatedAt: new Date().getTime(),
-                  status: true
                 }).then(async attendanceDoc => {
-                  await db.collection('khatabook').doc(empId).get().then( async khataDoc => {
+                  let khataCol = db.collection('khatabook').doc(empId)
+                  await khataCol.get().then( async khataDoc => {
                     if(khataDoc.exists) {
                       let ta = khataDoc.data().totalAmount + amount
-                      await db.collection('khatabook').doc(empId).update({ 
+                      await khataCol.update({ 
                         totalAmount: ta,
                         updatedAt: new Date().getTime(),
-                      }).catch( e => Swal.fire('Error!', e.message, 'error'))
+                      }).catch( e => {
+                        Swal.fire('Error!', e.message, 'error')
+                        reject()
+                      })
                     } else {
-                      await db.collection('khatabook').doc(empId).set({ 
+                      await khataCol.set({ 
                         createdAt: new Date().getTime(),
                         updatedAt: new Date().getTime(),
                         totalAmount: amount 
-                      }).catch( e => Swal.fire('Error!', e.message, 'error'))
+                      }).catch( e => {
+                        Swal.fire('Error!', e.message, 'error')
+                        reject()
+                      })
                     }
-                    await db.collection('khatabook').doc(empId).collection('history').add({
+                    await khataCol.collection('history').doc(attendanceDoc.id).set({
                       salary: amount,
                       attendanceId: attendanceDoc.id,
                       date: this.form.date,
                       createdAt: new Date().getTime(),
                       updatedAt: new Date().getTime(),
-                      status: true
-                    }).catch( e => Swal.fire('Error!', e.message, 'error'))
-                    resolve()
-                  })                 
-                }).catch( e => Swal.fire('Error!', e.message, 'error'))
+                    }).then(() => {
+                      Swal.fire('Saved!', 'All attendance has been saved successfully.', 'success')
+                      this.reset()
+                      resolve()
+                    }).catch( e => {
+                      Swal.fire('Error!', e.message, 'error')
+                      reject()
+                    })
+                  }).catch( e => {
+                    Swal.fire('Error!', e.message, 'error')
+                    reject()
+                  })            
+                }).catch( e => {
+                  Swal.fire('Error!', e.message, 'error')
+                  reject()
+                })
               })
               this.get()
             } else reject()
           })
-        }).then(() => {
-          Swal.fire('Saved!', 'Your all data has been saved successfully.', 'success')
-          this.reset()
         }).catch(() => this.dialog = true).finally(() => this.$store.commit('SET_OVERLAY', false))
       }
     },

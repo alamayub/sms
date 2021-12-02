@@ -18,6 +18,22 @@ export default new Vuex.Store({
     SET__TABLE_LOAD: (state, val) => state.table_load = val
   },
   actions: {
+    swalDialog({ title }) {
+      return new Promise((resolve, reject) => {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: `Yes, ${title} it!`
+        }).then(result => {
+          if(result.isConfirmed) resolve()
+          else reject()
+        }).catch(() => reject())
+      })
+    },
     // login
     login({ commit },  { email, password }) {
       commit('SET_OVERLAY', true)
