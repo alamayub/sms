@@ -217,7 +217,7 @@ export default {
                       })
                     }
                     await khataCol.collection('history').doc(attendanceDoc.id).set({
-                      salary: amount,
+                      amount: amount,
                       attendanceId: attendanceDoc.id,
                       date: this.form.date,
                       createdAt: new Date().getTime(),

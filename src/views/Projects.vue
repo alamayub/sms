@@ -63,6 +63,7 @@ export default {
     form: {
       title: null,
       budget: null,
+      collectedAmount: null,
       mobile: null,
       address: null,
       startDate: null,

@@ -15,8 +15,9 @@ Vue.mixin({
   data: () => ({
     menus: [
       { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard' },
-      { title: 'Expenses', icon: 'mdi-cash-100', to: '/expenses' },
       { title: 'Attendance', icon: 'mdi-poll', to: '/attendance' },
+      { title: 'Payment', icon: 'mdi-poll', to: '/payment' },
+      { title: 'Expenses', icon: 'mdi-cash-100', to: '/expenses' },
       { title: 'Projects', icon: 'mdi-clipboard-list-outline', to: '/projects' },
       { title: 'Employee', icon: 'mdi-account-group', to: '/employee' },
       { title: 'Reports', icon: 'mdi-post', to: '/reports' },
